@@ -34,4 +34,13 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
+add_executable(msg_test src/msg_test.cpp)
+ament_target_dependencies(msg_test rclcpp unitree_legged_msgs)
+
+install(TARGETS
+   msg_test
+  DESTINATION 
+   lib/${PROJECT_NAME}
+)
+
 ament_package()
