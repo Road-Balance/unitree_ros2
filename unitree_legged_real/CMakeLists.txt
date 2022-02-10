@@ -31,12 +31,13 @@ include_directories(
     ${catkin_INCLUDE_DIRS}
 )
 
-include_directories(/home/bian/Robot_SDK/unitree_legged_sdk/include)
-link_directories(/home/bian/Robot_SDK/unitree_legged_sdk/lib)
+include_directories(/home/kimsooyoung/Documents/unitree_legged_sdk/include)
+link_directories(/home/kimsooyoung/Documents/unitree_legged_sdk/lib)
 
 ################
 
-string(CONCAT LEGGED_SDK_NAME libunitree_legged_sdk.so)
+# string(CONCAT LEGGED_SDK_NAME libunitree_legged_sdk.so)
+string(CONCAT LEGGED_SDK_NAME libunitree_legged_sdk_amd64.so)
 set(EXTRA_LIBS ${LEGGED_SDK_NAME} lcm)
 
 if(BUILD_TESTING)
@@ -52,13 +53,24 @@ endif()
 
 ####################
 
-add_executable(lcm_server /home/bian/Robot_SDK/unitree_legged_sdk/examples/lcm_server.cpp)
-target_link_libraries(lcm_server ${EXTRA_LIBS} ${catkin_LIBRARIES})
-add_dependencies(lcm_server ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_executable(lcm_server /home/kimsooyoung/Documents/unitree_legged_sdk/examples/lcm_server.cpp)
+# target_link_libraries(lcm_server ${EXTRA_LIBS} ${catkin_LIBRARIES})
+# add_dependencies(lcm_server ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-add_executable(walk_lcm src/exe/walk_mode.cpp)
-target_link_libraries(walk_lcm ${EXTRA_LIBS} ${catkin_LIBRARIES})
-add_dependencies(walk_lcm ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_executable(position_mode src/exe/position_mode.cpp)
+# target_link_libraries(position_mode ${EXTRA_LIBS} ${catkin_LIBRARIES})
+# add_dependencies(position_mode ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+add_executable(lcm_server /home/kimsooyoung/Documents/unitree_legged_sdk/examples/lcm_server.cpp)
+target_link_libraries(lcm_server ${EXTRA_LIBS})
+# ament_target_dependencies(lcm_server rclcpp)
+
+add_executable(position_mode src/position_mode.cpp)
+target_link_libraries(position_mode ${EXTRA_LIBS})
+ament_target_dependencies(position_mode rclcpp unitree_legged_msgs)
+
+add_executable(high_msg_test src/high_msg_test.cpp)
+ament_target_dependencies(high_msg_test rclcpp unitree_legged_msgs)
 
 add_executable(msg_test src/msg_test.cpp)
 ament_target_dependencies(msg_test rclcpp unitree_legged_msgs)
@@ -68,6 +80,7 @@ ament_target_dependencies(imu_msg_test rclcpp unitree_legged_msgs)
 
 
 install(TARGETS
+   lcm_server
    msg_test
    imu_msg_test
   DESTINATION 

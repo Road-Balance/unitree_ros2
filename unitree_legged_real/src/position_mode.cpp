@@ -13,7 +13,7 @@
 #include "unitree_legged_msgs/msg/low_state.hpp"
 
 // #include "convert.h"
-#include "unitree_legged_real/convert.hpp"
+#include "unitree_legged_real/convert.h"
 #include "rclcpp/rclcpp.hpp"
 
 using namespace UNITREE_LEGGED_SDK;
@@ -22,7 +22,8 @@ template<typename TLCM>
 void* update_loop(void* param)
 {
     TLCM *data = (TLCM *)param;
-    while(ros::ok){
+    // while(ros::ok){
+    while(rclcpp::ok()){
         data->Recv();
         usleep(2000);
     }
@@ -71,7 +72,7 @@ int mainHelper(int argc, char *argv[], TLCM &roslcm)
     pthread_t tid;
     pthread_create(&tid, NULL, update_loop<TLCM>, &roslcm);
 
-    SendLowROS.levelFlag = LOWLEVEL;
+    SendLowROS.level_flag = LOWLEVEL;
     for(int i = 0; i<12; i++){
         SendLowROS.motor_cmd[i].mode = 0x0A;   // motor switch to servo (PMSM) mode
         SendLowROS.motor_cmd[i].q = PosStopF;        // 禁止位置环
