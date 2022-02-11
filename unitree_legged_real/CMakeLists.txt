@@ -81,6 +81,7 @@ ament_target_dependencies(imu_msg_test rclcpp unitree_legged_msgs)
 
 install(TARGETS
    lcm_server
+   position_mode
    msg_test
    imu_msg_test
   DESTINATION 
