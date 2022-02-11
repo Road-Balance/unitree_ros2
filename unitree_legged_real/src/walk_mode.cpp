@@ -3,14 +3,21 @@ Copyright (c) 2018-2019, Unitree Robotics.Co.Ltd. All rights reserved.
 Use of this source code is governed by the MPL-2.0 license, see LICENSE.
 ************************************************************************/
 
-#include <ros/ros.h>
-#include <pthread.h>
+// #include <ros/ros.h>
+#include "rclcpp/rclcpp.hpp"
+
 #include <string>
+#include <pthread.h>
 #include <boost/thread.hpp>
 #include <boost/thread/mutex.hpp>
-#include <unitree_legged_msgs/HighCmd.h>
-#include <unitree_legged_msgs/HighState.h>
-#include "convert.h"
+
+// #include <unitree_legged_msgs/HighCmd.h>
+// #include <unitree_legged_msgs/HighState.h>
+#include "unitree_legged_msgs/msg/HighCmd.hpp"
+#include "unitree_legged_msgs/msg/HighState.hpp"
+
+// #include "convert.h"
+#include "unitree_legged_real/convert.h"
 
 using namespace UNITREE_LEGGED_SDK;
 
@@ -18,7 +25,8 @@ template<typename TLCM>
 void* update_loop(void* param)
 {
     TLCM *data = (TLCM *)param;
-    while(ros::ok){
+    // while(ros::ok){
+    while(rclcpp::ok()){
         data->Recv();
         usleep(2000);
     }
@@ -32,37 +40,42 @@ int mainHelper(int argc, char *argv[], TLCM &roslcm)
               << "Press Enter to continue..." << std::endl;
     std::cin.ignore();
 
-    ros::NodeHandle n;
-    ros::Rate loop_rate(500);
+    // ros::NodeHandle n;
+    auto node = rclcpp::Node::make_shared("unitree_walk_node");
+    
+    // ros::Rate loop_rate(500);
+    rclcpp::WallRate loop_rate(500);  // Hz
+
 
     // SetLevel(HIGHLEVEL);
     long motiontime = 0;
     TCmd SendHighLCM = {0};
     TState RecvHighLCM = {0};
-    unitree_legged_msgs::HighCmd SendHighROS;
-    unitree_legged_msgs::HighState RecvHighROS;
+    unitree_legged_msgs::msg::HighCmd SendHighROS;
+    unitree_legged_msgs::msg::HighState RecvHighROS;
 
     roslcm.SubscribeState();
 
     pthread_t tid;
     pthread_create(&tid, NULL, update_loop<TLCM>, &roslcm);
 
-    while (ros::ok()){
+    // while (ros::ok()){
+    while (rclcpp::ok()){
         motiontime = motiontime+2;
         roslcm.Get(RecvHighLCM);
         RecvHighROS = ToRos(RecvHighLCM);
 
         SendHighROS.mode = 0;      
-        SendHighROS.gaitType = 0;
-        SendHighROS.speedLevel = 0;
-        SendHighROS.footRaiseHeight = 0;
-        SendHighROS.bodyHeight = 0;
+        SendHighROS.gait_type = 0;
+        SendHighROS.speed_level = 0;
+        SendHighROS.foot_raise_height = 0;
+        SendHighROS.body_height = 0;
         SendHighROS.euler[0]  = 0;
         SendHighROS.euler[1] = 0;
         SendHighROS.euler[2] = 0;
         SendHighROS.velocity[0] = 0.0f;
         SendHighROS.velocity[1] = 0.0f;
-        SendHighROS.yawSpeed = 0.0f;
+        SendHighROS.yaw_speed = 0.0f;
         SendHighROS.reserve = 0;
 
         if(motiontime > 0 && motiontime < 1000){
@@ -91,15 +104,15 @@ int mainHelper(int argc, char *argv[], TLCM &roslcm)
         }
         if(motiontime > 6000 && motiontime < 7000){
             SendHighROS.mode = 1;
-            SendHighROS.bodyHeight = -0.2;
+            SendHighROS.body_height = -0.2;
         }
         if(motiontime > 7000 && motiontime < 8000){
             SendHighROS.mode = 1;
-            SendHighROS.bodyHeight = 0.1;
+            SendHighROS.body_height = 0.1;
         }
         if(motiontime > 8000 && motiontime < 9000){
             SendHighROS.mode = 1;
-            SendHighROS.bodyHeight = 0.0;
+            SendHighROS.body_height = 0.0;
         }
         if(motiontime > 9000 && motiontime < 11000){
             SendHighROS.mode = 5;
@@ -112,10 +125,10 @@ int mainHelper(int argc, char *argv[], TLCM &roslcm)
         }
         if(motiontime > 14000 && motiontime < 18000){
             SendHighROS.mode = 2;
-            SendHighROS.gaitType = 2;
+            SendHighROS.gait_type = 2;
             SendHighROS.velocity[0] = 0.4f; // -1  ~ +1
-            SendHighROS.yawSpeed = 2;
-            SendHighROS.footRaiseHeight = 0.1;
+            SendHighROS.yaw_speed = 2;
+            SendHighROS.foot_raise_height = 0.1;
             // printf("walk\n");
         }
         if(motiontime > 18000 && motiontime < 20000){
@@ -124,9 +137,9 @@ int mainHelper(int argc, char *argv[], TLCM &roslcm)
         }
         if(motiontime > 20000 && motiontime < 24000){
             SendHighROS.mode = 2;
-            SendHighROS.gaitType = 1;
+            SendHighROS.gait_type = 1;
             SendHighROS.velocity[0] = 0.2f; // -1  ~ +1
-            SendHighROS.bodyHeight = 0.1;
+            SendHighROS.body_height = 0.1;
             // printf("walk\n");
         }
         if(motiontime>24000 ){
@@ -135,14 +148,18 @@ int mainHelper(int argc, char *argv[], TLCM &roslcm)
 
         SendHighLCM = ToLcm(SendHighROS, SendHighLCM);
         roslcm.Send(SendHighLCM);
-        ros::spinOnce();
+
+        // ros::spinOnce();
+        rclcpp::spin_some(node);
+
         loop_rate.sleep(); 
     }
     return 0;
 }
 
 int main(int argc, char *argv[]){
-    ros::init(argc, argv, "walk_ros_mode");
+    // ros::init(argc, argv, "walk_ros_mode");
+    rclcpp::init(argc, argv);
 
     UNITREE_LEGGED_SDK::LCM roslcm(UNITREE_LEGGED_SDK::HIGHLEVEL);
     mainHelper<UNITREE_LEGGED_SDK::HighCmd, UNITREE_LEGGED_SDK::HighState, UNITREE_LEGGED_SDK::LCM>(argc, argv, roslcm);

@@ -1,6 +1,3 @@
-
-
-
 #include <string>
 #include <pthread.h>
 #include <boost/thread.hpp>
