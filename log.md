@@ -10,6 +10,8 @@ loading shared libraries: liblcm.so.1: cannot open shared object file: No such f
 
 => sudo ldconfig -v
 
+# 이더넷 포트 설정
+
 https://askubuntu.com/questions/1049302/wired-ethernet-not-working-ubuntu-18-04
 
 sudo lshw -C network
@@ -17,7 +19,6 @@ wlp2s0
 
 cat /etc/network/interfaces
 
-ros2 run some_package some_ros_executable --ros-args --param string_param:=test
 
 # Before
 wlp2s0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
@@ -28,7 +29,6 @@ wlp2s0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
         RX errors 0  dropped 0  overruns 0  frame 0
         TX packets 58785  bytes 13845106 (13.8 MB)
         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
-
 
 # After
 wlp2s0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
@@ -51,3 +51,15 @@ LCM Initialized. Subscribe channel: LCM_Low_Cmd, Publish channel: LCM_Low_State
 [Loop Start] named: LCM_Recv, period: 2(ms), cpu unspecified
 [Loop Start] named: control_loop, period: 2(ms), cpu unspecified
 ```
+
+
+=> 이건 A1이라서 그런 듯
+
+# Joy
+
+```
+sudo apt install ros-eloquent-joy
+
+ros2 run joy joy_node --ros-args -p autorepeat_rate:=100.0
+```
+
