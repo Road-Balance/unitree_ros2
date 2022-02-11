@@ -31,8 +31,8 @@ include_directories(
     ${catkin_INCLUDE_DIRS}
 )
 
-include_directories(/home/kimsooyoung/Documents/unitree_legged_sdk/include)
-link_directories(/home/kimsooyoung/Documents/unitree_legged_sdk/lib)
+include_directories(/home/kimsooyoung/Dev/unitree_legged_sdk/include)
+link_directories(/home/kimsooyoung/Dev/unitree_legged_sdk/lib)
 
 ################
 
@@ -53,7 +53,7 @@ endif()
 
 ####################
 
-# add_executable(lcm_server /home/kimsooyoung/Documents/unitree_legged_sdk/examples/lcm_server.cpp)
+# add_executable(lcm_server /home/kimsooyoung/Dev/unitree_legged_sdk/examples/lcm_server.cpp)
 # target_link_libraries(lcm_server ${EXTRA_LIBS} ${catkin_LIBRARIES})
 # add_dependencies(lcm_server ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
@@ -61,7 +61,7 @@ endif()
 # target_link_libraries(position_mode ${EXTRA_LIBS} ${catkin_LIBRARIES})
 # add_dependencies(position_mode ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-add_executable(lcm_server /home/kimsooyoung/Documents/unitree_legged_sdk/examples/lcm_server.cpp)
+add_executable(lcm_server /home/kimsooyoung/Dev/unitree_legged_sdk/examples/lcm_server.cpp)
 target_link_libraries(lcm_server ${EXTRA_LIBS})
 # ament_target_dependencies(lcm_server rclcpp)
 
