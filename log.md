@@ -52,6 +52,18 @@ LCM Initialized. Subscribe channel: LCM_Low_Cmd, Publish channel: LCM_Low_State
 [Loop Start] named: control_loop, period: 2(ms), cpu unspecified
 ```
 
+=> udp.h
+```
+namespace UNITREE_LEGGED_SDK
+{
+
+    constexpr int UDP_CLIENT_PORT = 8080;                       // local port
+    constexpr int UDP_SERVER_PORT = 8007;                       // target port
+    constexpr char UDP_SERVER_IP_BASIC[] = "192.168.123.10";    // target IP address
+    constexpr char UDP_SERVER_IP_SPORT[] = "192.168.123.161";   // target IP address
+
+```
+
 
 => 이건 A1이라서 그런 듯
 
