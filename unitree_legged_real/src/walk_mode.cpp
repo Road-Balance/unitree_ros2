@@ -13,8 +13,8 @@ Use of this source code is governed by the MPL-2.0 license, see LICENSE.
 
 // #include <unitree_legged_msgs/HighCmd.h>
 // #include <unitree_legged_msgs/HighState.h>
-#include "unitree_legged_msgs/msg/HighCmd.hpp"
-#include "unitree_legged_msgs/msg/HighState.hpp"
+#include "unitree_legged_msgs/msg/high_cmd.hpp"
+#include "unitree_legged_msgs/msg/high_state.hpp"
 
 // #include "convert.h"
 #include "unitree_legged_real/convert.h"
@@ -45,7 +45,6 @@ int mainHelper(int argc, char *argv[], TLCM &roslcm)
     
     // ros::Rate loop_rate(500);
     rclcpp::WallRate loop_rate(500);  // Hz
-
 
     // SetLevel(HIGHLEVEL);
     long motiontime = 0;

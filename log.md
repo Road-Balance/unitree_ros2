@@ -75,3 +75,12 @@ sudo apt install ros-eloquent-joy
 ros2 run joy joy_node --ros-args -p autorepeat_rate:=100.0
 ```
 
+
+```
+ros2 run unitree_legged_real lcm_server LOWLEVEL
+ros2 run unitree_legged_real 
+
+ros2 run unitree_legged_real lcm_server HIGHLEVEL
+ros2 run unitree_legged_real walk_mode
+
+```
