@@ -84,3 +84,20 @@ ros2 run unitree_legged_real lcm_server HIGHLEVEL
 ros2 run unitree_legged_real walk_mode
 
 ```
+
+
+Nope => link Error 
+```
+void mode_cb(const std_msgs::msg::UInt8::SharedPtr &msg)
+{
+	std::cout << msg->data << std::endl;
+}
+```
+
+Yes
+```
+void mode_cb(const std_msgs::msg::UInt8::SharedPtr msg)
+{
+	std::cout << msg->data << std::endl;
+}
+```

@@ -13,8 +13,6 @@ Use of this source code is governed by the MPL-2.0 license, see LICENSE.
 #include <boost/thread.hpp>
 #include <boost/thread/mutex.hpp>
 
-// #include <unitree_legged_msgs/HighCmd.h>
-// #include <unitree_legged_msgs/HighState.h>
 #include "unitree_legged_msgs/msg/high_cmd.hpp"
 #include "unitree_legged_msgs/msg/high_state.hpp"
 #include "geometry_msgs/msg/twist.hpp"
@@ -40,17 +38,20 @@ uint8_t gaitType = 0;
 float bodyHeight = 0;
 float footRaiseHeight = 0;
 
-auto dog_can_move = std_msgs::msg::Bool;
-auto dogImu = sensor_msgs::msg::Imu;
+auto dog_can_move = std_msgs::msg::Bool();
+auto dogImu = sensor_msgs::msg::Imu();
 
-void cmd_vel_cb(const geometry_msgs::msg::Twist& msg){
-    x_vel     = msg.linear.x;
-    y_vel     = msg.linear.y;
-    yaw_speed = msg.angular.z;
+void cmd_vel_cb(const geometry_msgs::msg::Twist::SharedPtr msg)
+{
+	std::cout << msg->linear.x << std::endl;
+
+	x_vel = msg->linear.x;
 }
 
-void mode_cb(const std_msgs::msg::UInt8& msg){
-    mode = msg.data;
+void mode_cb(const std_msgs::msg::UInt8::SharedPtr msg)
+{
+	mode = msg->data;
+	std::cout << unsigned(mode) << std::endl;
 }
 
 template<typename TLCM>
@@ -78,10 +79,10 @@ int mainHelper(int argc, char *argv[], TLCM &roslcm)
     // ros::Rate loop_rate(500);
     rclcpp::WallRate loop_rate(500);  // Hz
 
-    auto cmd_vel_sub = node->create_subscription<geometry_msgs::msg::Twist>("cmd_vel", 10, cmd_vel_cb);
-    auto mode_sub = node->create_subscription<std_msgs::msg::UInt8>("dog_mode", 10, mode_cb);
-    auto dog_imu_pub = node->create_publisher<sensor_msgs::msg::Imu>("imu_raw", 1000);
-    auto dog_can_move_pub = node->create_publisher<std_msgs::msg::Bool>("dog_can_move", 1000);
+	auto cmd_vel_sub = node->create_subscription<geometry_msgs::msg::Twist>("/cmd_vel", 10, cmd_vel_cb);
+	auto mode_sub = node->create_subscription<std_msgs::msg::UInt8>("dog_mode", 10, mode_cb);
+	auto dog_imu_pub = node->create_publisher<sensor_msgs::msg::Imu>("imu_raw", 1000);
+	auto dog_can_move_pub = node->create_publisher<std_msgs::msg::Bool>("dog_can_move", 1000);
 
     // SetLevel(HIGHLEVEL);
     long motiontime = 0;
@@ -90,14 +91,13 @@ int mainHelper(int argc, char *argv[], TLCM &roslcm)
     unitree_legged_msgs::msg::HighCmd SendHighROS;
     unitree_legged_msgs::msg::HighState RecvHighROS;
 
-    // roslcm.SubscribeState();
+    roslcm.SubscribeState();
 
     pthread_t tid;
     pthread_create(&tid, NULL, update_loop<TLCM>, &roslcm);
 
-    // while (ros::ok()){
     while (rclcpp::ok()){
-        motiontime = motiontime+2;
+
         roslcm.Get(RecvHighLCM);
         RecvHighROS = ToRos(RecvHighLCM);
 
@@ -114,16 +114,15 @@ int mainHelper(int argc, char *argv[], TLCM &roslcm)
         SendHighROS.yaw_speed = 0.0f;
         SendHighROS.reserve = 0;
 
-        std::cout << x_vel << std::endl;
-        std::cout << y_vel << std::endl;
-        std::cout << yaw_speed << std::endl;
+        // std::cout << x_vel << std::endl;
+        // std::cout << y_vel << std::endl;
+        // std::cout << yaw_speed << std::endl;
 
-        std::cout << mode << std::endl;
+        // std::cout << mode << std::endl;
 
-        // SendHighLCM = ToLcm(SendHighROS, SendHighLCM);
-        // roslcm.Send(SendHighLCM);
+        SendHighLCM = ToLcm(SendHighROS, SendHighLCM);
+        roslcm.Send(SendHighLCM);
 
-        // ros::spinOnce();
         rclcpp::spin_some(node);
 
         loop_rate.sleep(); 
@@ -132,7 +131,6 @@ int mainHelper(int argc, char *argv[], TLCM &roslcm)
 }
 
 int main(int argc, char *argv[]){
-    // ros::init(argc, argv, "walk_ros_mode");
     rclcpp::init(argc, argv);
 
     UNITREE_LEGGED_SDK::LCM roslcm(UNITREE_LEGGED_SDK::HIGHLEVEL);
